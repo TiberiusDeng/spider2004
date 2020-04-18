@@ -26,6 +26,7 @@ def content_proc(item):
     return content
 
 i = 0
+hot = 0.0
 for nick in nicks:
     #nick = nicks[i].text
     repost = reposts[i].text
@@ -40,10 +41,22 @@ for nick in nicks:
         'like': like,
         'content': content
     })
-    i = i+1
+    i = i + 1
+    #print(comment)
+    if re.search('\d+', repost):
+        repost_val = re.search('\d+', repost).group()
+    else:
+        repost_val = 0
+    like_val = like
+    if re.search('\d+', comment):
+        comment_val = re.search('\d+', comment).group()
+    else:
+        comment_val = 0
+    #print(repost_val)
+    hot = hot + float(like_val) * 0.1 + float(repost_val) * 0.5 + float(comment_val) * 0.05
 
 print(infolist)
-
+print(hot)
 
 
 
