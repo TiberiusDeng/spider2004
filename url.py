@@ -15,5 +15,5 @@ def generate_search_url_weibo(keyword, page=1,
         url_sufix['timescope'] = 'custom:{}:{}'.format(st, et)
     return 'https://s.weibo.com/weibo?{}'.format(urllib.parse.urlencode(url_sufix)) #urllib.parse.quot就是urlencode
 
-a = generate_search_url_weibo('动森', 1, '2020-04-01-0', '2020-04-02-0')
-print(a)
+#a = generate_search_url_weibo('动森', 1, '2020-04-01-0', '2020-04-02-0')
+#print(a)

@@ -1,58 +1,77 @@
 import csv
 import json
 import os
-import requests
+from kernel import single_page_proc
+import time
+import datetime
+from url import generate_search_url_weibo
+
+from datetime import timedelta
+
 from collections import OrderedDict
 
+def if_add_zero(val):
+    if val < 10:
+        return '0'
+    else:
+        return ''
+
 class WeiboSpider(object):
-    def __init__():
-        self.hot =
-
-    def generate_search_url_weibo(keyword, page=1, timesn=WechatSogouConst.search_article_time.anytime,
-                            st=None, et=None):
-        assert isinstance(page, int) and page > 0
-
-        url_sufix = OrderedDict()
-        url_sufix["page"] = page
-        url_sufix["suball"] = 1  #代表是全部类型，有的是含图片什么的
-        url_sufix["Refer"] = "g" #或weibo_weibo代表搜索的是综合
-        if st or et:
-            url_sufix[]
+    def __init__(self, keyword, date_list):
+        self.popularity = []
+        self.keyword = keyword
+        self.date_list = date_list
+        self.timestep = 0
 
 
 
-    def request(self):
+    #def request(self):
 
-    def analysis(self):
+    #def analysis(self):
 
-    def set_parameter(self):
+    #def set_parameter(self):
 
-    def output(self):
+    #def output(self):
 
     def run(self):
+        for day in self.date_list:
+            hot_by_day = 0
+            for hour in range(22):
+                hot = 0
+                for page in range(50):
+                    st = "{}-{}{}-{}{}-{}".format(day.year, if_add_zero(day.month), day.month,
+                                                  if_add_zero(day.day), day.day, hour)
+                    et = "{}-{}{}-{}{}-{}".format(day.year, if_add_zero(day.month), day.month,
+                                                  if_add_zero(day.day), day.day, hour + 1)
+                    url = generate_search_url_weibo(self.keyword, page + 1, st, et)
+                    hot = hot + single_page_proc(url)
+                    time.sleep(3)
+                hot_by_day = hot_by_day + hot
+            self.popularity.append(hot_by_day)
+            print(hot_by_day)
 
-    def reset(self):
+
+    #def reset(self):
+
+    def output_print(self):
+        for i in self.popularity:
+            print(self.popularity)
 
 
 
 def main():
     try:
-        config_path = os.path.split(
-            os.path.realpath(__file__))[0] + os.sep + 'config.json'
-        if not os.path.isfile(config_path):
-            sys.exit(u'当前路径：%s 不存在配置文件config.json' %
-                     (os.path.split(os.path.realpath(__file__))[0] + os.sep))
-        with open(config_path) as f:
-            try:
-                config = json.loads(f.read())
-            except ValueError:
-                sys.exit(u'config.json 格式不正确，请参考 '
-                         u'https://github.com/dataabc/weiboSpider#3程序设置')
-        wbspd = WeiSpider(config)
+        st = datetime.date(2020, 3, 1)
+        et = datetime.date(2020, 3, 5)
+        day = timedelta(days=1)
+        date_list = []
+        for i in range((et - st).days):
+            date_list.append(st + i * day)
+        wbspd = WeiboSpider('动物森友会', date_list)
         wbspd.run()  # 爬取信息
     except Exception as e:
         print('Error: ', e)
-        traceback.print_exc()
+        #traceback.print_exc()
 
 
 if __name__ == '__main__':
