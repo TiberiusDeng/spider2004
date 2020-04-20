@@ -44,8 +44,13 @@ class WeiboSpider(object):
                     et = "{}-{}{}-{}{}-{}".format(day.year, if_add_zero(day.month), day.month,
                                                   if_add_zero(day.day), day.day, hour + 1)
                     url = generate_search_url_weibo(self.keyword, page + 1, st, et)
-                    hot = hot + single_page_proc(url)
-                    time.sleep(3)
+
+                    single_page = single_page_proc(url)
+                    if(single_page==None):
+                        break#todo 确实可以跳出此级循环
+                    else:
+                        hot = hot + single_page
+                        time.sleep(3)
                 hot_by_day = hot_by_day + hot
             self.popularity.append(hot_by_day)
             print(hot_by_day)
