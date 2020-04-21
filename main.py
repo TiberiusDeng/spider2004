@@ -22,9 +22,7 @@ class WeiboSpider(object):
         self.keyword = keyword
         self.date_list = date_list
         self.timestep = 0
-
-
-
+        self.hot_day = []  # todo 每日热度
     #def request(self):
 
     #def analysis(self):
@@ -36,8 +34,9 @@ class WeiboSpider(object):
     def run(self):
         for day in self.date_list:
             hot_by_day = 0
-            for hour in range(22):
-                hot = 0
+            for hour in range(24):
+                hot = 0 #todo 每小时热度
+                #todo 构建每日表
                 for page in range(50):
                     st = "{}-{}{}-{}{}-{}".format(day.year, if_add_zero(day.month), day.month,
                                                   if_add_zero(day.day), day.day, hour)
@@ -52,9 +51,14 @@ class WeiboSpider(object):
                         hot = hot + single_page
                         time.sleep(3)
                 hot_by_day = hot_by_day + hot
-            self.popularity.append(hot_by_day)
+                print("hour = %d" % hour)
+                print("hot = %f" % hot)
+            #todo 导出list
+            #self.hot_day.append(hot_by_day)
+            print("%d" % (day.day))
+            self.popularity.append({'today_hot':hot_by_day})
             print(hot_by_day)
-
+        print(self.popularity)
 
     #def reset(self):
 
@@ -66,8 +70,8 @@ class WeiboSpider(object):
 
 def main():
     try:
-        st = datetime.date(2020, 3, 1)
-        et = datetime.date(2020, 3, 5)
+        st = datetime.date(2020, 2, 12)
+        et = datetime.date(2020, 2, 13)
         day = timedelta(days=1)
         date_list = []
         for i in range((et - st).days):
