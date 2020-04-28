@@ -4,6 +4,7 @@ import os
 from kernel import single_page_proc
 import time
 import datetime
+import pandas as pd
 from url import generate_search_url_weibo
 
 from datetime import timedelta
@@ -23,6 +24,8 @@ class WeiboSpider(object):
         self.date_list = date_list
         self.timestep = 0
         self.hot_day = []  # todo 每日热度
+        self.data = pd.DataFrame(columns=["id", "comment_num", "forward", "like", "time"])
+        self.output_dir = 'D:/weibo_result.csv'
     #def request(self):
 
     #def analysis(self):
@@ -44,13 +47,21 @@ class WeiboSpider(object):
                                                   if_add_zero(day.day), day.day, hour + 1)
                     url = generate_search_url_weibo(self.keyword, page + 1, st, et)
 
-                    single_page = single_page_proc(url)
-                    if(single_page==None):
+                    [single_page, single_page_df] = single_page_proc(url)
+
+
+                    if (single_page==None):
                         break#todo 确实可以跳出此级循环
                     else:
                         hot = hot + single_page
                         time.sleep(3)
+                    single_page_df['time'] = day
+                    if (self.data.empty):
+                        self.data = single_page_df
+                    else:
+                        self.data = pd.concat([self.data, single_page_df], ignore_index=True)
                 hot_by_day = hot_by_day + hot
+
                 print("hour = %d" % hour)
                 print("hot = %f" % hot)
             #todo 导出list
@@ -66,18 +77,30 @@ class WeiboSpider(object):
         for i in self.popularity:
             print(self.popularity)
 
+    def print_data(self):
+        print(self.data)
+
+    def output_file(self):
+        self.data.to_csv(self.output_dir, sep=',', header=True, index=True,
+                         encoding = 'utf_8_sig')
+
+    def set_output_dir(self, out_dir):
+        self.output_dir = out_dir
 
 
 def main():
     try:
-        st = datetime.date(2020, 2, 12)
-        et = datetime.date(2020, 2, 13)
+        st = datetime.date(2020, 3, 1)
+        et = datetime.date(2020, 3, 2)
         day = timedelta(days=1)
         date_list = []
         for i in range((et - st).days):
             date_list.append(st + i * day)
         wbspd = WeiboSpider('动物森友会', date_list)
         wbspd.run()  # 爬取信息
+        wbspd.print_data()
+        wbspd.set_output_dir('D:/work/spider2004/reult.csv')
+        wbspd.output_file()
     except Exception as e:
         print('Error: ', e)
         #traceback.print_exc()
