@@ -90,8 +90,8 @@ class WeiboSpider(object):
 
 def main():
     try:
-        st = datetime.date(2020, 3, 1)
-        et = datetime.date(2020, 3, 2)
+        st = datetime.date(2020, 2, 15)
+        et = datetime.date(2020, 4, 15)
         day = timedelta(days=1)
         date_list = []
         for i in range((et - st).days):
@@ -99,7 +99,7 @@ def main():
         wbspd = WeiboSpider('动物森友会', date_list)
         wbspd.run()  # 爬取信息
         wbspd.print_data()
-        wbspd.set_output_dir('D:/work/spider2004/reult.csv')
+        wbspd.set_output_dir('D:/work/spider2004/result.csv')
         wbspd.output_file()
     except Exception as e:
         print('Error: ', e)
