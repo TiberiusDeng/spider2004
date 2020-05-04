@@ -17,3 +17,11 @@ def single_page_proc(url):
     if html == None:
         return [None, None]
     infolist = []
+
+def get_text(url):
+    try:
+        header = wechat_header()
+        text = requests.get(url,headers = header).text
+        return text
+    except Exception as e:
+        print('Error: ', e)
