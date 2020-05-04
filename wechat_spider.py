@@ -6,7 +6,7 @@ from wc_kernel import get_text
 from url import  generate_search_url_wechat
 import requests
 from lxml import etree
-url = generate_search_url_wechat('动物森友',1)
+url = generate_search_url_wechat('动物森友',1,2)
 html = get_html(url)
 
 
@@ -53,12 +53,30 @@ print(sin_title)
 
 authors = html.xpath('//*[@class = "news-list"]//div[@class = "txt-box"]/div/a/text()')
 print(authors)
+sin_author = html.xpath('//*[@class = "news-list"]//div[@class = "txt-box"]/div/a')[0].text
 author_links = html.xpath('//*[@class = "news-list"]//div[@class = "txt-box"]/div/a/@href')
 sin_author_link = 'http://weixin.sogou.com{}'.format(author_links[0])
 print(sin_author_link)
 
+#post = int(post_view_perms[0])
 
+def get_perm(author):
+    perm_list = []
+    url = generate_search_url_wechat(author,1,1)
+    resp = get_text(url)
+    post_view_perms = __get_post_view_perm(resp)
+    page = get_html(url)
+    sin_info = page.xpath('//ul[@class="news-list2"]/li')[0]
+    headimg = sin_info.xpath('div/div[1]/a/img/@src')
+    open_id = headimg[0].split('/')[-1]
+    post = post_view_perms.get(open_id).split(',')
+    post_perm = post[0]
+    view_perm = post[1]
+    perm_list.append(post_perm)
+    perm_list.append(view_perm)
+    return perm_list
 
+post_view = get_perm(sin_author)
 
 testlink = 'https://weixin.sogou.com/weixin?type=1&s_from=input&query=%E6%9C%BA%E5%99%A8%E4%B9%8B%E5%BF%83&ie=utf8&_sug_=y&_sug_type_=&w=01019900&sut=4841&sst0=1588597172085&lkt=0%2C0%2C0'
     # 'https://weixin.sogou.com/weixin?type=1&s_from=input&query=1626%E6%BD%AE%E6%B5%81%E7%B2%BE%E9%80%89&ie=utf8&_sug_=n&_sug_type_=&w=01019900&sut=15459&sst0=1588597122525&lkt=0%2C0%2C0'
@@ -66,12 +84,13 @@ testlink2 = 'https://weixin.sogou.com/weixin?type=1&s_from=input&query=%E8%99%8E
 testlink3 = 'https://weixin.sogou.com/weixin?type=1&s_from=input&query=%E8%82%A5%E8%A5%BF%E8%82%A5%E8%A5%BF&ie=utf8&_sug_=n&_sug_type_=&w=01019900&sut=4960&sst0=1588597584707&lkt=0%2C0%2C0'
 resp = get_text(testlink)
 post_view_perms = __get_post_view_perm(resp)
-#post = int(post_view_perms[0])
+
 
 page = get_html(testlink)
 sin_info = page.xpath('//ul[@class="news-list2"]/li')[0]
 headimg = sin_info.xpath('div/div[1]/a/img/@src')
 open_id = headimg[0].split('/')[-1]
+
 
 
 
