@@ -11,7 +11,11 @@ def get_html(url):
         header = wechat_header()
         html = requests.get(url,headers = header).text.replace('<!--red_beg-->','').replace('<!--red_end-->','').replace('<em>','').replace('</em>','')
         selector = etree.HTML(html)
-        return selector
+        noresult = selector.xpath('//*[@id="noresult_part1_container"]')
+        if noresult:
+            return None
+        else:
+            return selector #todo 查找迭代器内是否有元素
     except Exception as e:
         print('Error: ', e)
         traceback.print_exc()
@@ -73,6 +77,7 @@ def single_page_proc(url):
     infolist = []
     data_set = pd.DataFrame(columns=['title','article_link','author','author_link','post','view','post_time'])
     i = 0
+    hot = 0
     titles = html.xpath('//*[@class = "news-list"]//div[@class = "txt-box"]/h3/a')
     article_links = html.xpath('//*[@class = "news-list"]//div[@class = "txt-box"]/h3/a/@href')
     authors = html.xpath('//*[@class = "news-list"]//div[@class = "txt-box"]/div/a')
@@ -86,8 +91,8 @@ def single_page_proc(url):
         author = authors[i].text
         author_link = 'http://weixin.sogou.com{}'.format(author_links[i])
         post_view = get_post_view(author) #todo 处理为空
-        post = post_view[0]
-        view = post_view[1]
+        post = float(post_view[0])
+        view = float(post_view[1])
         post_time = time_trans(post_times[i].text)
         data_item = {
             'title' : title,
@@ -100,3 +105,6 @@ def single_page_proc(url):
         }
         data_set = data_set.append(data_item, ignore_index=True)
         i = i+1
+        hot = hot+0.1+post*5+view*8
+    print(i)
+    return [hot,data_set]
