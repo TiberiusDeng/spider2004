@@ -4,10 +4,16 @@ import traceback
 import re
 import numpy
 import pandas as pd
+from tools.proxypool_connect import get_ip
 
 def get_html(url,header):
     try:
-        html = requests.get(url,headers = header).content #TODO bytes型如何查找
+        proxy = get_ip()
+        proxies = {
+            'http': 'http://' + proxy,
+            'https': 'https://' + proxy
+        }
+        html = requests.get(url,headers = header,proxies=proxies).content #TODO bytes型如何查找
         selector = etree.HTML(html)
         noresult = selector.xpath('//*[@id="pl_feedlist_index"]//div[@class="card card-no-result s-pt20b40"]') #判断页面是否有内容
         if len(noresult):

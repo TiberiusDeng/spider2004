@@ -5,11 +5,17 @@ import re
 from header import wechat_header
 import datetime
 from url import generate_search_url_wechat
+from tools.proxypool_connect import get_ip
 import pandas as pd
 def get_html(url):
     try:
         header = wechat_header()
-        html = requests.get(url,headers = header).text.replace('<!--red_beg-->','').replace('<!--red_end-->','').replace('<em>','').replace('</em>','')
+        proxy = get_ip()
+        proxies = {
+            'http': 'http://' + proxy,
+            'https': 'https://' + proxy
+        }
+        html = requests.get(url,headers = header,proxies = proxies).text.replace('<!--red_beg-->','').replace('<!--red_end-->','').replace('<em>','').replace('</em>','')
         selector = etree.HTML(html)
         noresult = selector.xpath('//*[@id="noresult_part1_container"]')
         if noresult:
